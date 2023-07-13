@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './product.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 
 @Injectable()
@@ -11,8 +11,12 @@ export class ProductService {
     private productRepository: Repository<Product>,
   ) {}
 
-  getAllProdcuts() {
-    return this.productRepository.find();
+  getAllProdcuts(searchByItem?: string, searchByBarCode?: string) {
+    return searchByItem || searchByBarCode
+      ? this.productRepository.find({
+          where: [{ item_name: Like(`%${searchByItem}%`) }, { barcode: Like(`%${searchByBarCode}%`)}],
+        })
+      : this.productRepository.find();
   }
 
   async getProductById(id: number): Promise<Product> {
