@@ -1,22 +1,22 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Order {
+export class Customer {
   @PrimaryGeneratedColumn()
-  order_id: number;
+  customer_id: number;
 
   @Column()
   customer_name: string;
 
   @Column()
-  purchase_date: Date;
+  purchase_date: string;
 
-  @Column()
+  @Column('decimal', { precision: 10, scale: 2 })
   subtotal: number;
 
-  @Column()
+  @Column('decimal', { precision: 10, scale: 2 })
   discount: number;
 
-  @Column()
+  @Column('decimal', { precision: 10, scale: 2 })
   final_price:number;
 }
