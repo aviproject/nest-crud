@@ -25,24 +25,21 @@ export class CustomerService {
     customer.final_price = customerData.final_price;
 
     let data = await this.customerRepository.save(customer);
-    console.log(data.customer_id,"data")
+    console.log(data.customer_id,"customer_ID")
    
-    let orderData;
-    if(data.customer_id){
-      const order = new Order();
+    if(!!data.customer_id){
+      // const order = new Order();
 
-      customerData.items.map((obj) => {
-        order.customer_id = data.customer_id,
-        order.product_id = obj.item_id,
-        order.quantity = obj.quantity,
-        order.total = obj.total
+      let orderData = customerData.items.map((obj) => ({
+        customer_id  : data.customer_id,
+        product_id  : obj.item_id,
+        quantity :  obj.quantity,
+        total : obj.total
+      }))
+      let insertedData = await this.orderRepositry.save(orderData);
+      console.log(insertedData,"OrderId")
 
-        orderData = this.orderRepositry.save(order);
-        console.log(orderData.order_id,"orderData")
-      })
-
+      return insertedData
     }
-
-    return orderData
   }
 }

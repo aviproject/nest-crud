@@ -5,6 +5,7 @@ import { Product } from './products/product.entity';
 import { CustomerModule } from './customer/customer.module';
 import { Customer } from './customer/customer.entity';
 import { Order } from './order/order.entity';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { Order } from './order/order.entity';
       retryDelay:3000,
     }),
     ProductModule,
-    CustomerModule
+    CustomerModule,
+    OrderModule
   ],
   controllers: [],
   providers: [],

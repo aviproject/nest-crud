@@ -1,4 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Order } from 'src/order/order.entity';
+import { Product } from 'src/products/product.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
 export class Customer {
@@ -19,4 +22,7 @@ export class Customer {
 
   @Column('decimal', { precision: 10, scale: 2 })
   final_price:number;
+
+  @OneToMany(() => Order, order => order.customer,)
+  public order: Order[];
 }
