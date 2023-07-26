@@ -12,8 +12,13 @@ export class ProductController {
    * @returns 
    */
   @Get()
-  getAllProducts(@Query() params: {item:string,barcode:string}): any {
-    return this.productService.getAllProdcuts(params.item,params.barcode);
+  async getAllProducts(@Query() params: {item:string,barcode:string}){
+    try{
+      await this.productService.getAllProdcuts(params.item,params.barcode);
+      return "prodcut fetched sucessfully!"
+    }catch(error){
+      throw new NotFoundException(error)
+    }
   }
 
   /**

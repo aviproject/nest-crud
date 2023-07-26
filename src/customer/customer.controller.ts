@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Post } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { customerDto } from './customer.dto';
 
@@ -7,8 +7,13 @@ export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Post()
-  createCustomer(@Body() message: customerDto){
+  async createCustomer(@Body() message: customerDto){
     console.log(message);
-    return this.customerService.create(message);
-}
+    try{
+      await this.customerService.create(message);
+      return "Customer created sucessfully"
+    }catch(error){
+      throw new NotFoundException(error)
+    }
+  }
 }

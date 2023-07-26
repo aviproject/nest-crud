@@ -1,15 +1,20 @@
-import { Injectable, Post } from '@nestjs/common';
+import { Inject, Injectable, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Customer } from './customer.entity';
-import { customerDto } from './customer.dto';
+import { customerDto, itemDto } from './customer.dto';
 import { Order } from 'src/order/order.entity';
+import {MailService} from 'src/mailservice/mail.service'
 
 @Injectable()
 export class CustomerService {
   constructor(
+    @Inject(MailService)
+    private readonly mailService: MailService,
+
     @InjectRepository(Customer)
     private customerRepository: Repository<Customer>,
+
     @InjectRepository(Order)
     private orderRepositry : Repository<Order>
   ) {}
@@ -25,20 +30,19 @@ export class CustomerService {
     customer.final_price = customerData.final_price;
 
     let data = await this.customerRepository.save(customer);
-    console.log(data.customer_id,"customer_ID")
    
     if(!!data.customer_id){
-      // const order = new Order();
 
-      let orderData = customerData.items.map((obj) => ({
+      let orderData = customerData.items.map((obj: itemDto) => ({
         customer_id  : data.customer_id,
         product_id  : obj.item_id,
         quantity :  obj.quantity,
         total : obj.total
       }))
       let insertedData = await this.orderRepositry.save(orderData);
-      console.log(insertedData,"OrderId")
-
+      
+      if(insertedData) this.mailService.sendEMail();
+      
       return insertedData
     }
   }

@@ -13,12 +13,18 @@ export class Order {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   total: number;
 
-  @ManyToOne(() => Customer , (customer) => customer.order,{cascade: ["insert"]})
+  @ManyToOne(() => Customer , customer => customer.order,{cascade: true})
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
   
-  @ManyToOne(() => Product, (product) => product.order,{cascade: ["insert"]} )
+  @ManyToOne(() => Product, product => product.order,{cascade: true} )
   @JoinColumn({ name: 'product_id' })
   product: Product;
   
+  @Column()
+  public customer_id : number;
+
+  @Column()
+  public product_id:number;
+
 }
