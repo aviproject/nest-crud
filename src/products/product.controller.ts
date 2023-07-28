@@ -1,5 +1,6 @@
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
+import { ApiResponseDTO, ProductParams } from './product.dto';
 
 @Controller('/product')
 export class ProductController {
@@ -12,10 +13,17 @@ export class ProductController {
    * @returns 
    */
   @Get()
-  async getAllProducts(@Query() params: {item:string,barcode:string}){
+  async getAllProducts(@Query() params: ProductParams){
     try{
-      await this.productService.getAllProdcuts(params.item,params.barcode);
-      return "prodcut fetched sucessfully!"
+      let data = await this.productService.getAllProdcuts(params.item,params.barcode);
+        if(data){
+          const response: ApiResponseDTO = {
+            statusCode: 200,
+            message: 'Successfully fetched data',
+            data: data,
+          };
+          return response
+        }
     }catch(error){
       throw new NotFoundException(error)
     }
