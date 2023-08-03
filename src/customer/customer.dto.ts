@@ -5,7 +5,7 @@ export class customerDto {
   discount: number;
   final_price: number;
   items: Array<{
-    item_id: number;
+    product_id: number;
     item_name: string;
     price: number;
     quantity: number;
@@ -14,7 +14,7 @@ export class customerDto {
 }
 
 export class itemDto {
-  item_id: number;
+  product_id: number;
   item_name: string;
   price: number;
   quantity: number;

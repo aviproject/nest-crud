@@ -26,7 +26,7 @@ export class CustomerService {
     customer.customer_name = customerData.customer_name;
     customer.purchase_date = customerData.purchase_date;
     customer.subtotal = customerData.subtotal;
-    customer.discount = customerData.discount;
+    customer.discount = customerData.discount ? customerData.discount : 0;
     customer.final_price = customerData.final_price;
 
     let data = await this.customerRepository.save(customer);
@@ -35,9 +35,9 @@ export class CustomerService {
 
       let orderData = customerData.items.map((obj: itemDto) => ({
         customer_id  : data.customer_id,
-        product_id  : obj.item_id,
-        quantity :  obj.quantity,
-        total : obj.total
+        product_id  : obj.product_id,
+        quantity :  obj.quantity ? obj.quantity : 1,
+        total : obj.total ? obj.total : obj?.price
       }))
       let insertedData = await this.orderRepositry.save(orderData);
       

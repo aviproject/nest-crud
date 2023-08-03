@@ -9,9 +9,17 @@ export class CustomerController {
   @Post()
   async createCustomer(@Body() message: customerDto){
     console.log(message);
+    // return
     try{
-      await this.customerService.create(message);
-      return "Customer created sucessfully"
+      let orderData = await this.customerService.create(message);
+      if(orderData){
+        const response = {
+          statusCode: 200,
+          message: "Order created sucessfully",
+          data: orderData,
+        };
+        return response
+      }
     }catch(error){
       throw new NotFoundException(error)
     }

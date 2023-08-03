@@ -16,7 +16,7 @@ export class ProductService {
       ? this.productRepository.find({
           where: [{ item_name: Like(`%${searchByItem}%`) }, { barcode: Like(`%${searchByBarCode}%`)}],
         })
-      : this.productRepository.find();
+      : [];
   }
 
   async getProductById(id: number): Promise<Product> {

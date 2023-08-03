@@ -16,10 +16,17 @@ export class ProductController {
   async getAllProducts(@Query() params: ProductParams){
     try{
       let data = await this.productService.getAllProdcuts(params.item,params.barcode);
-        if(data){
+        if(data.length){
           const response: ApiResponseDTO = {
             statusCode: 200,
-            message: 'Successfully fetched data',
+            message: "Product fetch successfully",
+            data: data,
+          };
+          return response
+        }else{
+          const response: ApiResponseDTO = {
+            statusCode: 200,
+            message: 'Product Not Found!',
             data: data,
           };
           return response
