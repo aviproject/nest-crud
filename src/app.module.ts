@@ -7,6 +7,9 @@ import { Customer } from './customer/customer.entity';
 import { Order } from './order/order.entity';
 import { OrderModule } from './order/order.module';
 import { MailModule } from './mailservice/mail.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { User } from './users/users.entity';
 
 @Module({
   imports: [
@@ -17,7 +20,7 @@ import { MailModule } from './mailservice/mail.module';
       username: 'root', 
       password: 'root', 
       database: 'Product_db', 
-      entities: [Product,Customer,Order],
+      entities: [Product,Customer,Order,User],
       synchronize: true,
       retryAttempts:3,
       retryDelay:3000,
@@ -25,7 +28,9 @@ import { MailModule } from './mailservice/mail.module';
     ProductModule,
     CustomerModule,
     OrderModule,
-    MailModule
+    MailModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [],
   providers: [],
