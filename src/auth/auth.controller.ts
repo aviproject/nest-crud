@@ -1,30 +1,29 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Post,
+  Request,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
-import { signUpDTO } from './auth.dto';
+import { signUpDTO, singInDTO } from './auth.dto';
+import { RegistrationFailedExceptionFilter } from 'src/exception/exceptionFilters/registration-failed.exception';
+import { EmailExistsExceptionFilter } from 'src/exception/exceptionFilters/email-exists.exception';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @Post('register')
-  async register(@Body() signUpDto: Record<string, any>) {
-
-      const registerUsers = await this.authService.register(signUpDto.username, signUpDto.password, signUpDto.email);
-      console.log(registerUsers,"HHhki")
-      let responseBody = {
-          code : HttpStatus.OK,
-          message : "User registered successfully",
-          data : registerUsers
-      }
-      return responseBody
+  @Post('signIn')
+  signIn(@Body() signInDto: singInDTO) {
+    return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
   @UseGuards(AuthGuard)
@@ -35,12 +34,17 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('signup')
-  async signUp(@Body() signUpDto:signUpDTO){
-    const registerUsers = await this.authService.signUp(signUpDto);
+  @UseFilters(RegistrationFailedExceptionFilter, EmailExistsExceptionFilter)
+  async signUp(@Body() signUpDto: signUpDTO) {
+    try {
+      const registerUsers = await this.authService.signUp(signUpDto);
       let responseBody = {
-          message : "User registered successfully",
-          data : registerUsers
-      }
-      return responseBody
+        message: 'Registration successful',
+        id: registerUsers,
+      };
+      return responseBody;
+    } catch (error) {
+      throw error;
+    }
   }
 }

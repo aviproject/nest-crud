@@ -8,8 +8,6 @@ export class CustomerController {
 
   @Post()
   async createCustomer(@Body() message: customerDto){
-    console.log(message);
-    // return
     try{
       let orderData = await this.customerService.create(message);
       if(orderData){

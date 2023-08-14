@@ -1,17 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from './users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { signUpDTO } from 'src/auth/auth.dto';
+import { encryptPassword } from 'src/utils/encryption';
 
 export type Users = any;
-export type RegisterUser = {
-  userId: number;
-  username: string;
-  password: any;
-  email: string;
-};
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -19,50 +19,36 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-    {
-      userId: 3,
-      username: 'Avaneesh',
-      password: 'avi1850',
-    },
-  ];
-
-  async findOne(username: string): Promise<Users | undefined> {
-    return this.users.find((user) => user.username === username);
-  }
-
-  async allUsers(): Promise<Users | undefined> {
-    return this.users;
-  }
-
-  async RegisterUser(user: RegisterUser) {
-    this.users.push(user);
-    return this.users;
+  async findOne(email: string): Promise<Users | undefined> {
+    const user = await this.userRepository.findOne({
+      where: {email : email}
+    });
+    return user
   }
 
   async userRegistration(signUpDto: signUpDTO) {
-    const user = new User();
+    const is_user_matched = await this.userRepository.findOne({
+      where: { email: signUpDto.email },
+    });
 
-    user.first_name = signUpDto.first_name;
-    user.last_name = signUpDto.last_name;
-    user.email = signUpDto.email;
-    user.password = signUpDto.password;
+    if (is_user_matched) {
+      throw new ConflictException();
+    } else {
+      try {
+        const password = await encryptPassword(signUpDto.password);
+        const user = new User();
 
-    try {
-      let userData = await this.userRepository.save(user);
-      return userData;
-    } catch {
-      throw 'Registration failed! try again later';
+        user.first_name = signUpDto.first_name;
+        user.last_name = signUpDto.last_name;
+        user.email = signUpDto.email;
+        user.password = password;
+        user.isActive = true;
+        let userData = await this.userRepository.save(user);
+
+        return userData.id;
+      } catch (error) {
+        throw new NotFoundException(); // Throw RegistrationFailedException
+      }
     }
   }
 }
